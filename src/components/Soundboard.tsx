@@ -3,9 +3,10 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Slider } from './ui/slider';
 import { useSoundboard } from '../hooks/useSoundboard';
-import { Play, Square, Save, Download } from 'lucide-react';
+import { Play, Square, Save, Download, Upload } from 'lucide-react';
 import { predefinedSounds } from '../utils/audioGenerator';
 import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group';
+import { toast } from 'sonner';
 
 const Soundboard: React.FC = () => {
   const {
@@ -22,6 +23,7 @@ const Soundboard: React.FC = () => {
     volume,
     setVolume,
     patterns,
+    setPatterns,
   } = useSoundboard();
 
   const handleDownload = () => {
@@ -43,6 +45,38 @@ const Soundboard: React.FC = () => {
     URL.revokeObjectURL(url);
 
     console.log('Downloading pattern:', songData);
+  };
+
+  const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const songData = JSON.parse(content);
+        
+        // Validate the uploaded data
+        if (!songData.patterns || !songData.bpm || songData.volume === undefined) {
+          throw new Error('Invalid file format');
+        }
+
+        setPatterns(songData.patterns);
+        setGlobalBPM(songData.bpm);
+        setVolume(songData.volume);
+        if (songData.name) {
+          setSongName(songData.name);
+        }
+
+        console.log('Uploaded pattern:', songData);
+        toast.success('Pattern loaded successfully!');
+      } catch (error) {
+        console.error('Error loading pattern:', error);
+        toast.error('Failed to load pattern. Please check the file format.');
+      }
+    };
+    reader.readAsText(file);
   };
 
   return (
@@ -121,6 +155,21 @@ const Soundboard: React.FC = () => {
               <Download className="w-4 h-4 mr-2" />
               Download
             </Button>
+            <div className="relative">
+              <input
+                type="file"
+                accept=".json"
+                onChange={handleUpload}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                aria-label="Upload pattern"
+              />
+              <Button
+                className="bg-cyan-600 hover:bg-cyan-700 text-white"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Upload
+              </Button>
+            </div>
           </div>
         </div>
 

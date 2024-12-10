@@ -94,6 +94,7 @@ export const useSoundboard = () => {
     startPlaying,
     stopPlaying,
     patterns,
+    setPatterns,
     updatePattern,
     songName,
     setSongName,
