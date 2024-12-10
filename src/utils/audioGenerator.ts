@@ -36,29 +36,47 @@ export const generateSound = ({
 };
 
 export const predefinedSounds = {
-  kick: {
+  sine880: {
     type: 'sine' as OscillatorType,
-    frequency: 150,
-    duration: 0.1,
-    gain: 0.8
+    frequency: 880,
+    duration: 0.2,
+    gain: 0.4
   },
-  hihat: {
+  sine440: {
+    type: 'sine' as OscillatorType,
+    frequency: 440,
+    duration: 0.2,
+    gain: 0.4
+  },
+  square330: {
     type: 'square' as OscillatorType,
-    frequency: 2000,
-    duration: 0.05,
+    frequency: 330,
+    duration: 0.2,
     gain: 0.3
   },
-  snare: {
+  square220: {
+    type: 'square' as OscillatorType,
+    frequency: 220,
+    duration: 0.2,
+    gain: 0.3
+  },
+  triangle165: {
     type: 'triangle' as OscillatorType,
-    frequency: 400,
-    duration: 0.1,
+    frequency: 165,
+    duration: 0.2,
     gain: 0.5
   },
-  bass: {
-    type: 'sine' as OscillatorType,
-    frequency: 80,
+  triangle110: {
+    type: 'triangle' as OscillatorType,
+    frequency: 110,
+    duration: 0.2,
+    gain: 0.5
+  },
+  sawtooth55: {
+    type: 'sawtooth' as OscillatorType,
+    frequency: 55,
     duration: 0.3,
-    gain: 0.6
+    gain: 0.4
   }
 };
 
