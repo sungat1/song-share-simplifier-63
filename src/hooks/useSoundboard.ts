@@ -48,7 +48,7 @@ export const useSoundboard = () => {
       
       // Play all active sounds for the current step
       Object.entries(patterns).forEach(([soundType, pattern]) => {
-        if (pattern[currentStep]) {
+        if (pattern[currentStep] && predefinedSounds[soundType as SoundType]) {
           const soundConfig = predefinedSounds[soundType as SoundType];
           generateSound({
             ...soundConfig,
