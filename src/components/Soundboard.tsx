@@ -3,7 +3,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Slider } from './ui/slider';
 import { useSoundboard } from '../hooks/useSoundboard';
-import { Play, Square, Save } from 'lucide-react';
+import { Play, Square, Save, Download } from 'lucide-react';
 import { predefinedSounds } from '../utils/audioGenerator';
 import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group';
 
@@ -23,6 +23,27 @@ const Soundboard: React.FC = () => {
     setVolume,
     patterns,
   } = useSoundboard();
+
+  const handleDownload = () => {
+    const songData = {
+      name: songName,
+      patterns,
+      bpm: globalBPM,
+      volume
+    };
+
+    const blob = new Blob([JSON.stringify(songData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${songName || 'bitboard'}-pattern.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    console.log('Downloading pattern:', songData);
+  };
 
   return (
     <div className="min-h-screen bg-black text-cyan-400 p-4">
@@ -92,6 +113,13 @@ const Soundboard: React.FC = () => {
             >
               <Save className="w-4 h-4 mr-2" />
               Save
+            </Button>
+            <Button
+              onClick={handleDownload}
+              className="bg-cyan-600 hover:bg-cyan-700 text-white"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Download
             </Button>
           </div>
         </div>
