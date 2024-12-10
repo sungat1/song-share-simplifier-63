@@ -25,6 +25,7 @@ export const useSoundboard = () => {
   const [recordedSounds, setRecordedSounds] = useState<Sound[]>([]);
   const [songName, setSongName] = useState('');
   const [globalBPM, setGlobalBPM] = useState(120);
+  const [volume, setVolume] = useState(50);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -79,12 +80,15 @@ export const useSoundboard = () => {
             clearInterval(sound.loopInterval);
             return { ...sound, isPlaying: false, loopInterval: undefined };
           } else {
-            const stepDuration = (60 / (sound.bpm || globalBPM)) * 1000 / 4; // Duration for each 16th note
+            const stepDuration = (60 / (sound.bpm || globalBPM)) * 1000 / 4;
             let step = 0;
             
             const interval = window.setInterval(() => {
               if (sound.pattern && sound.pattern[step % sound.pattern.length]) {
-                generateSound(predefinedSounds[sound.type]);
+                generateSound({
+                  ...predefinedSounds[sound.type],
+                  gain: (volume / 100) * (predefinedSounds[sound.type].gain || 0.5)
+                });
               }
               step++;
             }, stepDuration) as unknown as number;
@@ -95,7 +99,7 @@ export const useSoundboard = () => {
         return sound;
       });
     });
-  }, [globalBPM]);
+  }, [globalBPM, volume]);
 
   const startRecording = useCallback(() => {
     setIsRecording(true);
@@ -180,5 +184,7 @@ export const useSoundboard = () => {
     clearBoard,
     globalBPM,
     setGlobalBPM,
+    volume,
+    setVolume,
   };
 };
