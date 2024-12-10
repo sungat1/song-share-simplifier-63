@@ -3,22 +3,16 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Slider } from './ui/slider';
 import { useSoundboard } from '../hooks/useSoundboard';
-import { Play, Square, Trash2, Save } from 'lucide-react';
+import { Play, Square, Save } from 'lucide-react';
 import { predefinedSounds } from '../utils/audioGenerator';
 import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group';
 
 const Soundboard: React.FC = () => {
   const {
-    sounds,
-    addSound,
-    removeSound,
-    toggleSound,
+    isPlaying,
+    startPlaying,
+    stopPlaying,
     updatePattern,
-    isRecording,
-    startRecording,
-    stopRecording,
-    recordSound,
-    recordedSounds,
     songName,
     setSongName,
     saveSong,
@@ -27,6 +21,7 @@ const Soundboard: React.FC = () => {
     setGlobalBPM,
     volume,
     setVolume,
+    patterns,
   } = useSoundboard();
 
   return (
@@ -38,11 +33,11 @@ const Soundboard: React.FC = () => {
         <div className="flex flex-wrap items-center justify-between gap-4 glass-effect p-4 rounded-lg">
           <div className="flex items-center gap-4">
             <Button
-              onClick={isRecording ? stopRecording : startRecording}
+              onClick={isPlaying ? stopPlaying : startPlaying}
               className="bg-cyan-400 hover:bg-cyan-500 text-black min-w-[100px]"
             >
-              {isRecording ? <Square className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
-              {isRecording ? 'Stop' : 'Play'}
+              {isPlaying ? <Square className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
+              {isPlaying ? 'Stop' : 'Play'}
             </Button>
             
             <Button
@@ -106,10 +101,18 @@ const Soundboard: React.FC = () => {
           {Object.entries(predefinedSounds).map(([soundType, config]) => (
             <div key={soundType} className="glass-effect rounded-lg p-4">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-cyan-400 w-24">{soundType} {config.frequency}Hz</span>
+                <span className="text-cyan-400 w-24">{soundType}</span>
                 <ToggleGroup 
                   type="multiple"
                   className="grid grid-cols-16 gap-1 flex-1"
+                  value={patterns[soundType] ? patterns[soundType].map((v, i) => v ? i.toString() : '').filter(Boolean) : []}
+                  onValueChange={(value) => {
+                    const newPattern = Array(16).fill(0);
+                    value.forEach(v => {
+                      newPattern[parseInt(v)] = 1;
+                    });
+                    updatePattern(soundType, newPattern);
+                  }}
                 >
                   {Array(16).fill(0).map((_, i) => (
                     <ToggleGroupItem
@@ -123,22 +126,6 @@ const Soundboard: React.FC = () => {
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Published Songs */}
-        <div className="glass-effect p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4 text-cyan-400">Published Songs</h2>
-          <div className="space-y-2">
-            {recordedSounds.map((sound, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between p-2 border border-cyan-500/30 rounded"
-              >
-                <span className="text-cyan-400">{sound.name}</span>
-                <span className="text-cyan-400">{globalBPM} BPM</span>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </div>
